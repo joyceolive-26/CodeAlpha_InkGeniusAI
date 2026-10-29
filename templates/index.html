@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>InkGenius AI | Handwritten Digit Recognition</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f3f5fb;
+            color: #172033;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 580px;
+            margin: 0 auto;
+            padding: 28px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            color: #2948a5;
+            margin-bottom: 8px;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            color: #68738a;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 26px;
+        }
+
+        h3 {
+            font-size: 17px;
+        }
+
+        .canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 22px 0;
+        }
+
+        canvas {
+            width: 280px;
+            height: 280px;
+            max-width: 100%;
+            background: black;
+            border: 2px solid #d8deeb;
+            border-radius: 12px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: wait;
+        }
+
+        #predictBtn {
+            background: #3156c9;
+            color: white;
+        }
+
+        #clearBtn,
+        #clearHistoryBtn {
+            background: #e8ecf5;
+            color: #26324a;
+        }
+
+        #status {
+            text-align: center;
+            color: #657087;
+            font-size: 14px;
+            margin: 20px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .result-card {
+            padding: 18px;
+            background: #f5f7ff;
+            border: 1px solid #e2e8ff;
+            border-radius: 14px;
+            margin-top: 20px;
+        }
+
+        #mainPrediction {
+            color: #2948a5;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #mainConfidence {
+            text-align: center;
+            color: #657087;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .prediction {
+            margin: 17px 0;
+        }
+
+        .prediction-label {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .bar-background {
+            width: 100%;
+            height: 10px;
+            background: #e3e8f2;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            background: #3156c9;
+            border-radius: 20px;
+        }
+
+        .history-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e7eaf1;
+        }
+
+        .history-subtitle {
+            color: #68738a;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        #historyList {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 13px;
+            margin-bottom: 10px;
+            background: #f7f8fc;
+            border: 1px solid #e7eaf2;
+            border-radius: 10px;
+        }
+
+        .history-digit {
+            font-size: 23px;
+            font-weight: bold;
+            color: #2948a5;
+            min-width: 30px;
+        }
+
+        .history-details {
+            flex: 1;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .history-time {
+            font-size: 11px;
+            color: #7b8498;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 18px 8px;
+            color: #7b8498;
+            font-size: 14px;
+        }
+
+        .history-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        #historyCount {
+            color: #657087;
+            font-size: 13px;
+        }
+
+        .note {
+            color: #7b8498;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.6;
+            margin-top: 24px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <header>
+            <h1>InkGenius AI</h1>
+            <p class="subtitle">
+                Handwritten Character Recognition<br>
+                Draw a digit from 0 to 9 and let AI recognize it.
+            </p>
+        </header>
+
+        <!-- Drawing area -->
+        <section>
+            <h2>Draw Your Digit</h2>
+
+            <div class="canvas-wrapper">
+                <canvas
+                    id="drawingCanvas"
+                    width="280"
+                    height="280"
+                    aria-label="Drawing canvas for handwritten digits"
+                ></canvas>
+            </div>
+
+            <div class="buttons">
+                <button id="predictBtn" type="button">
+                    Predict Digit
+                </button>
+
+                <button id="clearBtn" type="button">
+                    Clear Canvas
+                </button>
+            </div>
+        </section>
+
+        <p id="status" role="status" aria-live="polite">
+            Draw a digit to get started.
+        </p>
+
+        <!-- Prediction result -->
+        <section id="resultSection" class="result-card" hidden>
+            <div id="mainPrediction"></div>
+            <div id="mainConfidence"></div>
+
+            <h3>Top 3 Predictions</h3>
+            <div id="topResults"></div>
+        </section>
+
+        <!-- Prediction history -->
+        <section class="history-section">
+            <h2>Prediction History</h2>
+
+            <p class="history-subtitle">
+                Your recent predictions appear here.
+            </p>
+
+            <div class="history-actions">
+                <span id="historyCount">0 predictions</span>
+
+                <button id="clearHistoryBtn" type="button">
+                    Clear History
+                </button>
+            </div>
+
+            <ul id="historyList">
+                <li class="empty-history">
+                    No predictions yet. Try drawing a digit!
+                </li>
+            </ul>
+        </section>
+
+        <p class="note">
+            Powered by TensorFlow and Flask.<br>
+            AI predictions are estimates and may not always be correct.
+            History is stored only for this page session.
+        </p>
+
+    </main>
+
+    <script>
+        // Get website elements
+        const canvas = document.getElementById("drawingCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const predictBtn = document.getElementById("predictBtn");
+        const clearBtn = document.getElementById("clearBtn");
+        const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+        const status = document.getElementById("status");
+        const resultSection = document.getElementById("resultSection");
+        const mainPrediction = document.getElementById("mainPrediction");
+        const mainConfidence = document.getElementById("mainConfidence");
+        const topResults = document.getElementById("topResults");
+
+        const historyList = document.getElementById("historyList");
+        const historyCount = document.getElementById("historyCount");
+
+        let drawing = false;
+        let hasDrawing = false;
+        let historyEntries = [];
+
+        // Set up the black drawing canvas and white brush
+        function setupCanvas() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 18;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+        }
+
+        setupCanvas();
+
+        // Convert pointer position to canvas coordinates
+        function getPosition(event) {
+            const rect = canvas.getBoundingClientRect();
+
+            return {
+                x: (event.clientX - rect.left) *
+                    (canvas.width / rect.width),
+
+                y: (event.clientY - rect.top) *
+                    (canvas.height / rect.height)
+            };
+        }
+
+        // Start drawing with mouse, touchscreen or stylus
+        canvas.addEventListener("pointerdown", function(event) {
+            event.preventDefault();
+
+            drawing = true;
+            hasDrawing = true;
+
+            canvas.setPointerCapture(event.pointerId);
+
+            const position = getPosition(event);
+
+            ctx.beginPath();
+            ctx.moveTo(position.x, position.y);
+            ctx.lineTo(position.x + 0.1, position.y + 0.1);
+            ctx.stroke();
+        });
+
+        // Continue drawing
+        canvas.addEventListener("pointermove", function(event) {
+            if (!drawing) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const position = getPosition(event);
+
+            ctx.lineTo(position.x, position.y);
+            ctx.stroke();
+        });
+
+        // Stop drawing
+        function stopDrawing() {
+            drawing = false;
+            ctx.beginPath();
+        }
+
+        canvas.addEventListener("pointerup", stopDrawing);
+        canvas.addEventListener("pointercancel", stopDrawing);
+
+        // Clear the canvas and current prediction
+        clearBtn.addEventListener("click", function() {
+            setupCanvas();
+
+            hasDrawing = false;
+
+            resultSection.hidden = true;
+            mainPrediction.textContent = "";
+            mainConfidence.textContent = "";
+            topResults.replaceChildren();
+
+            status.textContent = "Canvas cleared. Draw another digit.";
+        });
+
+        // Display the top 3 predictions and confidence bars
+        function displayPredictions(data) {
+            resultSection.hidden = false;
+
+            mainPrediction.textContent =
+                "Predicted Digit: " + data.digit;
+
+            mainConfidence.textContent =
+                "Confidence: " +
+                Number(data.confidence).toFixed(2) + "%";
+
+            topResults.replaceChildren();
+
+            const heading = document.createElement("h3");
+            heading.textContent = "Top 3 Predictions";
+            topResults.appendChild(heading);
+
+            data.top_three.forEach(function(item) {
+                const row = document.createElement("div");
+                row.className = "prediction";
+
+                const label = document.createElement("div");
+                label.className = "prediction-label";
+
+                const digitLabel = document.createElement("span");
+                digitLabel.textContent = "Digit " + item.digit;
+
+                const confidenceLabel = document.createElement("span");
+                confidenceLabel.textContent =
+                    Number(item.confidence).toFixed(2) + "%";
+
+                label.append(digitLabel, confidenceLabel);
+
+                const barBackground = document.createElement("div");
+                barBackground.className = "bar-background";
+
+                const bar = document.createElement("div");
+                bar.className = "bar";
+
+                const percentage = Math.max(
+                    0,
+                    Math.min(100, Number(item.confidence))
+                );
+
+                bar.style.width = percentage + "%";
+
+                barBackground.appendChild(bar);
+                row.append(label, barBackground);
+
+                topResults.appendChild(row);
+            });
+        }
+
+        // Add a successful prediction to the history
+        function addToHistory(data) {
+            const entry = {
+                digit: data.digit,
+                confidence: Number(data.confidence),
+                time: new Date().toLocaleTimeString()
+            };
+
+            // Keep the most recent 20 predictions
+            historyEntries.unshift(entry);
+            historyEntries = historyEntries.slice(0, 20);
+
+            renderHistory();
+        }
+
+        // Display the saved history entries
+        function renderHistory() {
+            historyList.replaceChildren();
+
+            historyCount.textContent =
+                historyEntries.length +
+                (historyEntries.length === 1
+                    ? " prediction"
+                    : " predictions");
+
+            if (historyEntries.length === 0) {
+                const emptyMessage = document.createElement("li");
+                emptyMessage.className = "empty-history";
+                emptyMessage.textContent =
+                    "No predictions yet. Try drawing a digit!";
+
+                historyList.appendChild(emptyMessage);
+                return;
+            }
+
+            historyEntries.forEach(function(entry, index) {
+                const listItem = document.createElement("li");
+                listItem.className = "history-item";
+
+                const number = document.createElement("span");
+                number.className = "history-digit";
+                number.textContent = entry.digit;
+
+                const details = document.createElement("div");
+                details.className = "history-details";
+
+                const predictionText = document.createElement("div");
+                predictionText.textContent =
+                    "Prediction: " + entry.digit;
+
+                const confidenceText = document.createElement("div");
+                confidenceText.textContent =
+                    "Confidence: " +
+                    entry.confidence.toFixed(2) + "%";
+
+                const timeText = document.createElement("div");
+                timeText.className = "history-time";
+                timeText.textContent = entry.time;
+
+                details.append(
+                    predictionText,
+                    confidenceText,
+                    timeText
+                );
+
+                listItem.append(number, details);
+                historyList.appendChild(listItem);
+            });
+        }
+
+        // Remove all history entries
+        clearHistoryBtn.addEventListener("click", function() {
+            historyEntries = [];
+            renderHistory();
+
+            status.textContent = "Prediction history cleared.";
+        });
+
+        // Send the drawing to the Flask backend
+        predictBtn.addEventListener("click", async function() {
+            if (!hasDrawing) {
+                status.textContent = "Please draw a digit first.";
+                return;
+            }
+
+            predictBtn.disabled = true;
+            status.textContent = "Analyzing your drawing...";
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        image: canvas.toDataURL("image/png")
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.error || "Prediction failed."
+                    );
+                }
+
+                if (
+                    typeof data.digit !== "number" ||
+                    typeof data.confidence !== "number" ||
+                    !Array.isArray(data.top_three)
+                ) {
+                    throw new Error(
+                        "Unexpected response from the server."
+                    );
+                }
+
+                displayPredictions(data);
+                addToHistory(data);
+
+                status.textContent = "Prediction completed successfully.";
+
+            } catch (error) {
+                console.error("Prediction error:", error);
+
+                status.textContent =
+                    error.message ||
+                    "Could not predict the digit. Please try again.";
+
+            } finally {
+                predictBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
