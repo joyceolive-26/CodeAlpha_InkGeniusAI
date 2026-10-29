@@ -1,40 +1,27 @@
+# ✍️ InkGenius AI — Handwritten Digit Recognition
 
-# InkGenius AI — Handwritten Digit Recognition
+InkGenius AI is a web-based handwritten digit recognition application built with Python, TensorFlow, and Flask. Users can draw a digit from **0 to 9** on a digital canvas and receive a prediction from a trained machine learning model.
 
-InkGenius AI is a web application that recognizes handwritten digits from 0 to 9 using a neural network trained on the MNIST dataset.
+## 🚀 Features
 
-Users can draw digits on a canvas and view the predicted digit, confidence score, top three predictions, and recent prediction history.
+* 🎨 Interactive drawing canvas for handwritten digits.
+* 🤖 Machine learning model trained on the MNIST dataset.
+* 🔢 Predicts handwritten digits from 0 to 9.
+* 📊 Displays prediction results and confidence information.
+* 🧹 Clear the canvas and try another digit.
+* 🌐 Simple web interface powered by Flask.
+* 📈 Reported MNIST test accuracy: **97.23%**.
 
-## Features
+## 🛠️ Technologies Used
 
-- Interactive drawing canvas
-- Handwritten digit recognition
-- Top 3 predictions with confidence percentages
-- Visual confidence bars
-- Recent prediction history
-- Clear canvas and clear history options
-- Image cropping, resizing, and normalization
-- Flask web application powered by TensorFlow
+* **Python** — application logic and model integration.
+* **TensorFlow / Keras** — machine learning model.
+* **Flask** — web application framework.
+* **NumPy** — numerical processing.
+* **Pillow** — image processing.
+* **HTML, CSS, and JavaScript** — web interface and drawing canvas.
 
-## Technologies Used
-
-- Python
-- TensorFlow and Keras
-- NumPy
-- Pillow
-- Flask
-- HTML
-- CSS
-- JavaScript
-- MNIST dataset
-
-## Model Performance
-
-The trained model achieved 97.23% accuracy on the MNIST test dataset in my training run.
-
-This is the model's accuracy on the MNIST test set. Results may differ when recognizing handwritten digits drawn by users.
-
-## Project Structure
+## 📁 Project Structure
 
 ```text
 HandwrittenCharacterRecognition/
@@ -44,67 +31,94 @@ HandwrittenCharacterRecognition/
 ├── preprocess.py
 ├── inkgenius_model.keras
 ├── requirements.txt
+├── templates/
+│   └── index.html
 ├── .gitignore
-├── README.md
-└── templates/
-    └── index.html
+└── README.md
 ```
 
-## Requirements
+## ⚙️ Installation and Setup
 
-- Python 3.12 recommended
-- pip
-- The trained model file: `inkgenius_model.keras`
+### 1. Clone the repository
 
-## Run the Project Locally
+```bash
+git clone https://github.com/joyceolive-26/CodeAlpha_InkGeniusAI.git
+```
 
-### 1. Get the project files
+### 2. Open the project folder
 
-Clone or download this repository and open a terminal inside the project folder.
+```bash
+cd CodeAlpha_InkGeniusAI
+```
 
-### 2. Create a virtual environment
+### 3. Create a virtual environment
 
-On Windows PowerShell:
+```bash
+python -m venv .venv
+```
+
+### 4. Activate the virtual environment
+
+**Windows PowerShell:**
 
 ```powershell
-py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-### 3. Install dependencies
+### 5. Install dependencies
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```bash
+python -m pip install -r requirements.txt
 ```
 
-### 4. Start the application
+### 6. Run the application
 
-```powershell
-.\.venv\Scripts\python.exe app.py
+```bash
+python app.py
 ```
 
-### 5. Open the website
+Open this address in your browser:
 
-Visit:
-
+```text
 http://127.0.0.1:5000
+```
 
-## How to Use
+## 🧠 Model Information
 
-1. Open the website.
-2. Draw a digit from 0 to 9.
-3. Click **Predict Digit**.
-4. View the main prediction and top three predictions.
-5. Use **Clear Canvas** to draw another digit.
-6. View or clear your prediction history.
+The application uses a trained neural network for handwritten digit classification using the MNIST dataset.
 
-## Future Improvements
+* **Task:** Digit classification.
+* **Input:** A handwritten digit drawn on the canvas.
+* **Output:** Predicted digit from 0 to 9.
+* **Reported test accuracy:** 97.23%.
 
-- Improve recognition across different handwriting styles
-- Add automated tests
-- Save history across browser sessions
-- Add a confusion matrix and detailed model evaluation
-- Deploy the application for public access
+Actual predictions may vary depending on handwriting style and image preprocessing.
 
-## Author
+## 🎯 Learning Outcomes
 
-Developed as a personal AI and software development learning project.
+This project demonstrates practical experience with:
+
+* Building a machine learning application.
+* Integrating a trained model with a Flask web application.
+* Processing images before prediction.
+* Creating an interactive browser-based interface.
+* Organizing Python project files and dependencies.
+* Using Git and GitHub for version control and project sharing.
+
+## 🔮 Future Improvements
+
+* Add support for recognizing handwritten letters.
+* Improve preprocessing for different handwriting styles.
+* Display a ranked list of prediction probabilities.
+* Deploy the application online.
+* Add screenshots and a demonstration video.
+
+## 👩‍💻 Author
+
+**Joyce Olive**
+
+GitHub: [joyceolive-26](https://github.com/joyceolive-26)
+
+## 📄 License
+
+This project is intended for educational and portfolio purposes.
